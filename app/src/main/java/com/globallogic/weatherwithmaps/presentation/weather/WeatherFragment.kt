@@ -115,11 +115,19 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
 
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: android.location.Location? ->
-                location?.let {
-                    viewModel.onLocationChanged(Location(it.latitude, it.longitude))
+                if (location != null) {
+                    viewModel.onLocationChanged(Location(location.latitude, location.longitude))
 
                     val markerBuilder = MarkerBuilder(
                         LatLng(location.latitude, location.longitude)
+                    )
+                        .draggable(true)
+                    tomtomMap.addMarker(markerBuilder)
+                } else {
+                    viewModel.onLocationChanged(Location(0.0, 0.0))
+
+                    val markerBuilder = MarkerBuilder(
+                        LatLng(0.0, 0.0)
                     )
                         .draggable(true)
                     tomtomMap.addMarker(markerBuilder)
