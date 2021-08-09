@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.globallogic.weatherwithmaps.R
 import com.globallogic.weatherwithmaps.databinding.FragmentWeatherBinding
 import com.globallogic.weatherwithmaps.presentation.util.State
-import com.tomtom.online.sdk.map.*
+import com.tomtom.online.sdk.map.MapFragment
+import com.tomtom.online.sdk.map.OnMapReadyCallback
+import com.tomtom.online.sdk.map.TomtomMap
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class WeatherFragment : Fragment(), OnMapReadyCallback {
@@ -37,25 +37,37 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_fragment) as MapFragment
         mapFragment.getAsyncMap(this)
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.weather.collect { state ->
-                println(state)
-                when (state) {
-                    State.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                    }
+        viewModel.weather.observe(viewLifecycleOwner) { state ->
+            println(state)
+            when (state) {
+                State.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
 
-                    is State.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        binding.tvCityName.text = state.data.current.weather.first().main
-                    }
+                is State.Success -> {
+                    binding.progressBar.visibility = View.GONE
 
-                    is State.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                    }
+                }
+
+                is State.Error -> {
+                    binding.progressBar.visibility = View.GONE
                 }
             }
         }
+        viewModel.locationName.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                State.Loading -> {
+                }
+                is State.Success -> {
+                    binding.tvCityName.text = state.data
+                }
+                is State.Error -> {
+                    binding.tvCityName.text = "Error"
+                }
+            }
+        }
+
+
     }
 
     override fun onMapReady(tomtomMap: TomtomMap) {

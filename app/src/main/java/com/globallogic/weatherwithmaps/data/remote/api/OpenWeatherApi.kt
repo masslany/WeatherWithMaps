@@ -1,9 +1,8 @@
 package com.globallogic.weatherwithmaps.data.remote.api
 
 import com.globallogic.weatherwithmaps.BuildConfig
-import com.globallogic.weatherwithmaps.data.remote.response.Weather
-import com.globallogic.weatherwithmaps.data.remote.response.WeatherResponse
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable
+import com.globallogic.weatherwithmaps.data.remote.response.location.LocationResponse
+import com.globallogic.weatherwithmaps.data.remote.response.weather.WeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -17,4 +16,11 @@ interface OpenWeatherApi {
         @Query("exclude") exclude: String = "minutely,hourly,alerts",
         @Query("appid") appid: String = BuildConfig.OPEN_WEATHER_API
     ): WeatherResponse
+
+    @GET("/geo/1.0/reverse")
+    suspend fun getLocationByCoordinates(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("appid") appid: String = BuildConfig.OPEN_WEATHER_API
+    ): LocationResponse
 }

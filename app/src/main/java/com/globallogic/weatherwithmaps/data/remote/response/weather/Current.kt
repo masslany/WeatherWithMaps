@@ -1,9 +1,9 @@
-package com.globallogic.weatherwithmaps.data.remote.response
+package com.globallogic.weatherwithmaps.data.remote.response.weather
 
 
 import com.google.gson.annotations.SerializedName
 
-data class Daily(
+data class Current(
     @SerializedName("clouds")
     val clouds: Int,
     @SerializedName("dew_point")
@@ -11,29 +11,21 @@ data class Daily(
     @SerializedName("dt")
     val dt: Int,
     @SerializedName("feels_like")
-    val feelsLike: FeelsLike,
+    val feelsLike: Double,
     @SerializedName("humidity")
     val humidity: Double,
-    @SerializedName("moon_phase")
-    val moonPhase: Double,
-    @SerializedName("moonrise")
-    val moonrise: Double,
-    @SerializedName("moonset")
-    val moonset: Int,
-    @SerializedName("pop")
-    val pop: Double,
     @SerializedName("pressure")
     val pressure: Double,
-    @SerializedName("rain")
-    val rain: Double,
     @SerializedName("sunrise")
     val sunrise: Double,
     @SerializedName("sunset")
     val sunset: Double,
     @SerializedName("temp")
-    val temp: Temp,
+    val temp: Double,
     @SerializedName("uvi")
     val uvi: Double,
+    @SerializedName("visibility")
+    val visibility: Int,
     @SerializedName("weather")
     val weather: List<Weather>,
     @SerializedName("wind_deg")

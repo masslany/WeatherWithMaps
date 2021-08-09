@@ -1,4 +1,4 @@
-package com.globallogic.weatherwithmaps.data.remote.response
+package com.globallogic.weatherwithmaps.data.remote.response.weather
 
 
 import com.google.gson.annotations.SerializedName
