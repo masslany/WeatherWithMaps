@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.globallogic.weatherwithmaps.databinding.FragmentMainBinding
 import com.tomtom.online.sdk.map.*
 
-class MainFragment : Fragment(), OnMapReadyCallback {
+class WeatherFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
