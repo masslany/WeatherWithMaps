@@ -9,6 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherWithMaps">
+
+        <meta-data
+            android:name="OnlineMaps.Key"
+            android:value="${TOMTOM_API_MAPS}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

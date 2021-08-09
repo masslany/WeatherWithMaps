@@ -5,6 +5,8 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id "org.jetbrains.kotlin.plugin.parcelize"
     id "androidx.navigation.safeargs.kotlin"
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+
 }
 
 android {
@@ -18,7 +20,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "MAPS_API_KEY", "\"$TOMTOM_API_MAPS\"")
     }
 
     buildTypes {
@@ -34,10 +35,15 @@ android {
 
     buildFeatures {
         viewBinding true
+        compose true
     }
 
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.0.1'
     }
 }
 
@@ -52,6 +58,23 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-alpha02'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
+    // Compose
+    implementation 'androidx.compose.ui:ui:1.0.1'
+    // Tooling support (Previews, etc.)
+    implementation 'androidx.compose.ui:ui-tooling:1.0.1'
+    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+    implementation 'androidx.compose.foundation:foundation:1.0.1'
+    // Material Design
+    implementation 'androidx.compose.material:material:1.0.1'
+    // Material design icons
+    implementation 'androidx.compose.material:material-icons-core:1.0.1'
+    implementation 'androidx.compose.material:material-icons-extended:1.0.1'
+    // Integration with activities
+    implementation 'androidx.activity:activity-compose:1.3.1'
+    // Integration with ViewModels
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07'
+    // Integration with observables
+    implementation 'androidx.compose.runtime:runtime-livedata:1.0.1'
 
     // Hilt
     implementation "com.google.dagger:hilt-android:2.37"
