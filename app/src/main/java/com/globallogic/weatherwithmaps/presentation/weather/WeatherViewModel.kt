@@ -29,10 +29,6 @@ class WeatherViewModel @Inject constructor(
     private val _locationName = MutableLiveData<State<String>>(State.Loading)
     val locationName: LiveData<State<String>> = _locationName
 
-    init {
-        onLocationChanged(Location(53.4138608, 14.5557252))
-    }
-
     fun onLocationChanged(location: Location) {
         val weather = fetchWeatherForLocation(location)
         val name = fetchNameForLocation(location)

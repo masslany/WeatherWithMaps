@@ -14,6 +14,7 @@ interface OpenWeatherApi {
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("exclude") exclude: String = "minutely,hourly,alerts",
+        @Query("units") units: String = "metric",
         @Query("appid") appid: String = BuildConfig.OPEN_WEATHER_API
     ): WeatherResponse
 

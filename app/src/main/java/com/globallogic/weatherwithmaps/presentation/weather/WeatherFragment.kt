@@ -1,20 +1,27 @@
 package com.globallogic.weatherwithmaps.presentation.weather
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bumptech.glide.RequestManager
 import com.globallogic.weatherwithmaps.R
 import com.globallogic.weatherwithmaps.data.remote.response.weather.WeatherResponse
 import com.globallogic.weatherwithmaps.databinding.FragmentWeatherBinding
 import com.globallogic.weatherwithmaps.domain.model.Location
 import com.globallogic.weatherwithmaps.presentation.util.State
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.tomtom.online.sdk.common.location.LatLng
 import com.tomtom.online.sdk.map.*
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class WeatherFragment : Fragment(), OnMapReadyCallback {
@@ -23,6 +30,11 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
     private val binding get() = _binding!!
 
     private val viewModel: WeatherViewModel by viewModels()
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    @Inject
+    lateinit var glide: RequestManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +50,8 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_fragment) as MapFragment
         mapFragment.getAsyncMap(this)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         viewModel.weather.observe(viewLifecycleOwner) { state ->
             handleWeatherState(state)
@@ -56,7 +70,7 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
                 binding.tvCityName.text = state.data
             }
             is State.Error -> {
-                binding.tvCityName.text = "Error"
+                binding.tvCityName.text = getString(R.string.no_location_name)
             }
         }
     }
@@ -69,7 +83,13 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
 
             is State.Success -> {
                 binding.progressBar.visibility = View.GONE
+                val icon = state.data.current.weather.first().icon
+                val iconUrl = "http://openweathermap.org/img/wn/$icon.png"
+                glide.load(iconUrl).into(binding.ivWeatherIcon)
 
+                binding.tvCondition.text = state.data.current.weather.first().description
+                binding.tvTemperature.text =
+                    getString(R.string.temperature_celc, state.data.current.temp.toString())
             }
 
             is State.Error -> {
@@ -90,10 +110,31 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
             override fun onDragging(marker: Marker) {}
         }
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(tomtomMap: TomtomMap) {
-        val markerBuilder = MarkerBuilder(LatLng(53.4138608, 14.5557252))
-            .draggable(true)
-        tomtomMap.addMarker(markerBuilder)
+
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: android.location.Location? ->
+                location?.let {
+                    viewModel.onLocationChanged(Location(it.latitude, it.longitude))
+
+                    val markerBuilder = MarkerBuilder(
+                        LatLng(location.latitude, location.longitude)
+                    )
+                        .draggable(true)
+                    tomtomMap.addMarker(markerBuilder)
+                }
+            }
+            .addOnFailureListener {
+                viewModel.onLocationChanged(Location(0.0, 0.0))
+
+                val markerBuilder = MarkerBuilder(
+                    LatLng(0.0, 0.0)
+                )
+                    .draggable(true)
+                tomtomMap.addMarker(markerBuilder)
+            }
+
         tomtomMap.addOnMarkerDragListener(onMarkerDragListener)
     }
 

@@ -16,7 +16,12 @@ class FetchNameForLocation @Inject constructor(
         val response = weatherRepository.getNameForLocation(location)
         response
             .onSuccess {
-                emit(State.Success(it.first().name))
+                try {
+                    emit(State.Success(it.first().name))
+                } catch (e: NoSuchElementException) {
+                    emit(State.Error(e))
+                }
+
             }
             .onFailure {
                 emit(State.Error(it))
