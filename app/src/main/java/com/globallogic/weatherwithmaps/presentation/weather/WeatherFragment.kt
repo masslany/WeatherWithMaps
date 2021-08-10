@@ -119,7 +119,6 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
             .rationale(getString(R.string.location_permission_rationale))
             .checkPermission { granted ->
                 if (granted) {
-                    tomtomMap.isMyLocationEnabled = true
                     placeMarkerOnUserLocation(tomtomMap)
                 } else {
                     placeMarkerOnDefaultLocation(tomtomMap)
@@ -149,27 +148,11 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
 
                     tomtomMap.addMarker(markerBuilder)
                 } else {
-                    viewModel.onLocationChanged(Location(0.0, 0.0))
-
-                    val markerBuilder = MarkerBuilder(
-                        LatLng(0.0, 0.0)
-                    )
-                        .draggable(true)
-                        .tag(LOCATION_MARKER_TAG)
-
-                    tomtomMap.addMarker(markerBuilder)
+                    placeMarkerOnDefaultLocation(tomtomMap)
                 }
             }
             .addOnFailureListener {
-                viewModel.onLocationChanged(Location(0.0, 0.0))
-
-                val markerBuilder = MarkerBuilder(
-                    LatLng(0.0, 0.0)
-                )
-                    .draggable(true)
-                    .tag(LOCATION_MARKER_TAG)
-
-                tomtomMap.addMarker(markerBuilder)
+                placeMarkerOnDefaultLocation(tomtomMap)
             }
     }
 
