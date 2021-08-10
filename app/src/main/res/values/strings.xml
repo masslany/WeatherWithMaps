@@ -3,4 +3,8 @@
     <string name="weather_icon">Weather icon</string>
     <string name="no_location_name">No location name</string>
     <string name="temperature_celc">%1$s  °C</string>
+    <string name="dialog_permission_title">Permission required</string>
+    <string name="dialog_permission_default_message">Default message</string>
+    <string name="dialog_permission_button_positive">OK</string>
+    <string name="location_permission_rationale">Permission used to set your current location.</string>
 </resources>

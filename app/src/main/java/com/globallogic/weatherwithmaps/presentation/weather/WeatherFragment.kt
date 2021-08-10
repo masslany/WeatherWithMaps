@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,6 +16,8 @@ import com.globallogic.weatherwithmaps.R
 import com.globallogic.weatherwithmaps.data.remote.response.weather.WeatherResponse
 import com.globallogic.weatherwithmaps.databinding.FragmentWeatherBinding
 import com.globallogic.weatherwithmaps.domain.model.Location
+import com.globallogic.weatherwithmaps.presentation.util.Permission
+import com.globallogic.weatherwithmaps.presentation.util.PermissionManager
 import com.globallogic.weatherwithmaps.presentation.util.State
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -32,6 +35,7 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
     private val viewModel: WeatherViewModel by viewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val permissionManager = PermissionManager.from(this)
 
     @Inject
     lateinit var glide: RequestManager
@@ -110,9 +114,26 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
             override fun onDragging(marker: Marker) {}
         }
 
-    @SuppressLint("MissingPermission")
+
     override fun onMapReady(tomtomMap: TomtomMap) {
 
+       permissionManager
+           .request(Permission.Location)
+           .rationale(getString(R.string.location_permission_rationale))
+           .checkPermission { granted ->
+                if(granted) {
+                    tomtomMap.isMyLocationEnabled = true
+                    placeMarkerOnUserLocation(tomtomMap)
+                } else {
+                    placeMarkerOnDefaultLocation(tomtomMap)
+                }
+           }
+
+        tomtomMap.addOnMarkerDragListener(onMarkerDragListener)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun placeMarkerOnUserLocation(tomtomMap: TomtomMap, ) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: android.location.Location? ->
                 if (location != null) {
@@ -142,8 +163,16 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
                     .draggable(true)
                 tomtomMap.addMarker(markerBuilder)
             }
+    }
 
-        tomtomMap.addOnMarkerDragListener(onMarkerDragListener)
+    private fun placeMarkerOnDefaultLocation(tomtomMap: TomtomMap) {
+        viewModel.onLocationChanged(Location(0.0, 0.0))
+
+        val markerBuilder = MarkerBuilder(
+            LatLng(0.0, 0.0)
+        )
+            .draggable(true)
+        tomtomMap.addMarker(markerBuilder)
     }
 
     override fun onDestroy() {
