@@ -133,7 +133,7 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
     }
 
     @SuppressLint("MissingPermission")
-    private fun placeMarkerOnUserLocation(tomtomMap: TomtomMap, ) {
+    private fun placeMarkerOnUserLocation(tomtomMap: TomtomMap) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: android.location.Location? ->
                 if (location != null) {
