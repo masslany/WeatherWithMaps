@@ -4,15 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.globallogic.weatherwithmaps.data.remote.response.weather.WeatherResponse
-import com.globallogic.weatherwithmaps.domain.model.Location
+import com.globallogic.weatherwithmaps.domain.model.LocationModel
 import com.globallogic.weatherwithmaps.domain.usecase.FetchNameForLocation
 import com.globallogic.weatherwithmaps.domain.usecase.FetchWeatherForLocation
 import com.globallogic.weatherwithmaps.presentation.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,7 +26,7 @@ class WeatherViewModel @Inject constructor(
     private val _locationName = MutableLiveData<State<String>>(State.Loading)
     val locationName: LiveData<State<String>> = _locationName
 
-    fun onLocationChanged(location: Location) {
+    fun onLocationChanged(location: LocationModel) {
         val weather = fetchWeatherForLocation(location)
         val name = fetchNameForLocation(location)
         viewModelScope.launch {

@@ -11,7 +11,7 @@ import com.bumptech.glide.RequestManager
 import com.globallogic.weatherwithmaps.R
 import com.globallogic.weatherwithmaps.data.remote.response.weather.WeatherResponse
 import com.globallogic.weatherwithmaps.databinding.FragmentWeatherBinding
-import com.globallogic.weatherwithmaps.domain.model.Location
+import com.globallogic.weatherwithmaps.domain.model.LocationModel
 import com.globallogic.weatherwithmaps.presentation.util.LOCATION_MARKER_TAG
 import com.globallogic.weatherwithmaps.presentation.util.Permission
 import com.globallogic.weatherwithmaps.presentation.util.PermissionManager
@@ -104,7 +104,7 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
             override fun onStartDragging(marker: Marker) {}
 
             override fun onStopDragging(marker: Marker) {
-                val location = Location(marker.position.latitude, marker.position.longitude)
+                val location = LocationModel(marker.position.latitude, marker.position.longitude)
                 viewModel.onLocationChanged(location)
             }
 
@@ -138,7 +138,7 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: android.location.Location? ->
                 if (location != null) {
-                    viewModel.onLocationChanged(Location(location.latitude, location.longitude))
+                    viewModel.onLocationChanged(LocationModel(location.latitude, location.longitude))
 
                     val markerBuilder = MarkerBuilder(
                         LatLng(location.latitude, location.longitude)
@@ -162,7 +162,7 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
             return
         }
 
-        viewModel.onLocationChanged(Location(0.0, 0.0))
+        viewModel.onLocationChanged(LocationModel(0.0, 0.0))
 
         val markerBuilder = MarkerBuilder(
             LatLng(0.0, 0.0)
