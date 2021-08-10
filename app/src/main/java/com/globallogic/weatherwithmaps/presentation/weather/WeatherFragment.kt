@@ -119,9 +119,11 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
             .rationale(getString(R.string.location_permission_rationale))
             .checkPermission { granted ->
                 if (granted) {
-                    placeMarkerOnUserLocation(tomtomMap)
+                    viewModel.location.observe(viewLifecycleOwner) { location ->
+                        placeMarkerOnUserLocation(tomtomMap, location)
+                    }
                 } else {
-                    placeMarkerOnDefaultLocation(tomtomMap)
+                    placeMarkerOnUserLocation(tomtomMap)
                 }
             }
 
@@ -129,48 +131,25 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
     }
 
     @SuppressLint("MissingPermission")
-    private fun placeMarkerOnUserLocation(tomtomMap: TomtomMap) {
+    private fun placeMarkerOnUserLocation(
+        tomtomMap: TomtomMap,
+        location: LocationModel = LocationModel(0.0, 0.0)
+    ) {
         val hasMarker = tomtomMap.findMarkerByTag(LOCATION_MARKER_TAG)
         if (hasMarker.isPresent) {
             return
         }
 
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: android.location.Location? ->
-                if (location != null) {
-                    viewModel.onLocationChanged(LocationModel(location.latitude, location.longitude))
-
-                    val markerBuilder = MarkerBuilder(
-                        LatLng(location.latitude, location.longitude)
-                    )
-                        .draggable(true)
-                        .tag(LOCATION_MARKER_TAG)
-
-                    tomtomMap.addMarker(markerBuilder)
-                } else {
-                    placeMarkerOnDefaultLocation(tomtomMap)
-                }
-            }
-            .addOnFailureListener {
-                placeMarkerOnDefaultLocation(tomtomMap)
-            }
-    }
-
-    private fun placeMarkerOnDefaultLocation(tomtomMap: TomtomMap) {
-        val hasMarker = tomtomMap.findMarkerByTag(LOCATION_MARKER_TAG)
-        if (hasMarker.isPresent) {
-            return
-        }
-
-        viewModel.onLocationChanged(LocationModel(0.0, 0.0))
+        viewModel.onLocationChanged(location)
 
         val markerBuilder = MarkerBuilder(
-            LatLng(0.0, 0.0)
+            LatLng(location.latitude, location.longitude)
         )
             .draggable(true)
             .tag(LOCATION_MARKER_TAG)
 
         tomtomMap.addMarker(markerBuilder)
+
     }
 
     override fun onDestroy() {
