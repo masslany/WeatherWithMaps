@@ -31,7 +31,7 @@ class WeatherViewModel @Inject constructor(
     private val _location = MutableLiveData(LocationModel(0.0, 0.0))
     val location: LiveData<LocationModel> = _location
 
-    init {
+    fun fetchLocation() {
         val userLocation = fetchUserLocation()
         viewModelScope.launch {
             userLocation.collect { location ->

@@ -119,13 +119,15 @@ class WeatherFragment : Fragment(), OnMapReadyCallback {
             .rationale(getString(R.string.location_permission_rationale))
             .checkPermission { granted ->
                 if (granted) {
-                    viewModel.location.observe(viewLifecycleOwner) { location ->
-                        placeMarkerOnUserLocation(tomtomMap, location)
-                    }
+                    viewModel.fetchLocation()
                 } else {
                     placeMarkerOnUserLocation(tomtomMap)
                 }
             }
+
+        viewModel.location.observe(viewLifecycleOwner) { location ->
+            placeMarkerOnUserLocation(tomtomMap, location)
+        }
 
         tomtomMap.addOnMarkerDragListener(onMarkerDragListener)
     }
